@@ -253,6 +253,12 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 @keyframes wiggle{30%{transform:rotate(-2.5deg) scale(1.06)}60%{transform:rotate(2deg)}}
 .event.in .ev-card,.event.in .ev-art{transition:transform .25s ease}
 
+.sound-btn{position:fixed;right:16px;bottom:16px;z-index:60;width:46px;height:46px;border-radius:50%;
+  border:1.5px solid var(--brass);background:rgba(24,33,66,.82);backdrop-filter:blur(4px);
+  color:var(--ivory);font-size:1.15rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.sound-btn.hint{animation:btn-pulse 2.4s ease-in-out infinite}
+@keyframes btn-pulse{50%{box-shadow:0 0 0 9px rgba(227,139,41,.18)}}
+
 /* ---------- marigold divider ---------- */
 .garland{animation:garland-flow 38s linear infinite;height:26px;background-image:radial-gradient(circle at 7px 13px,var(--marigold) 5px,var(--sindoor) 5.5px 7px,transparent 7.5px);
   background-size:22px 26px;background-repeat:repeat-x;opacity:.85}
@@ -278,6 +284,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 @media(prefers-reduced-motion:reduce){
   .rv,.event.rv .ev-card,.event.rv .ev-art,.event.rv .art-img{opacity:1;transform:none;transition:none}
   .diya,.scroll-cue,.hero::before,.petal,.garland,.cd div::after,.event::before,.river .flow{animation:none}
+  .sound-btn.hint{animation:none}
   .ticker div,.tl-head h2,.count h2,.venue h2,.rsvp h2,.event.in .art-img,.event.in .chip{animation:none}
   .hero-inner>*,.invocation,.hero h1 .weds{animation:none;opacity:1}
   .gate{display:none}
@@ -297,6 +304,8 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
   <div class="gate-half right"></div>
   <div class="gate-mark">🪔</div>
 </div>
+
+<button id="soundBtn" class="sound-btn hint" aria-label="Enable sound">🔔</button>
 
 <!-- ============ HERO · KASHI, NIGHT ============ -->
 <header class="hero">
@@ -564,21 +573,78 @@ if (RM && riverPath) riverPath.style.strokeDashoffset = 0;
              lastRing:0, prevVel:0 };
   });
 
-  /* synth temple bell — no audio files */
-  let AC = null;
-  const armAudio = () => { if (!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); };
-  addEventListener('pointerdown', armAudio, { once:true });
+  /* ---- audio engine: iOS-safe unlock, echo bus, ambient drone ---- */
+  let AC = null, master = null, echoIn = null, muted = false, droneTimer = null;
+  function armAudio() {
+    if (!AC) {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      master = AC.createGain(); master.gain.value = 1; master.connect(AC.destination);
+      /* echo bus: filtered feedback delay — airy temple reverb-ish tail */
+      echoIn = AC.createDelay(1); echoIn.delayTime.value = 0.27;
+      const fb = AC.createGain(); fb.gain.value = 0.42;
+      const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 850;
+      const wet = AC.createGain(); wet.gain.value = 0.55;
+      echoIn.connect(fb); fb.connect(hp); hp.connect(echoIn);
+      echoIn.connect(wet); wet.connect(master);
+      startDrone();
+      const btn = document.getElementById('soundBtn');
+      if (btn) btn.classList.remove('hint');
+    }
+    if (AC.state === 'suspended') AC.resume();       /* the iOS Safari fix */
+    const o = AC.createOscillator(), g = AC.createGain();   /* silent unlock blip */
+    g.gain.value = 0.0001; o.connect(g); g.connect(master);
+    o.start(); o.stop(AC.currentTime + 0.03);
+  }
+  addEventListener('pointerdown', armAudio, { passive:true });
+  addEventListener('touchstart',  armAudio, { passive:true });
+
+  /* sharper bell: lighter fundamental, brighter partials, echo send, longer air */
   function ring(vol, base) {
-    if (!AC || AC.state === 'suspended') return;
+    if (!AC) return;
+    if (AC.state === 'suspended') { AC.resume(); return; }
     const t = AC.currentTime;
-    [[1,1],[2.4,.35],[3.6,.15]].forEach(([m,g]) => {
+    const send = AC.createGain(); send.gain.value = 1;
+    send.connect(master); send.connect(echoIn);
+    [[1,.4],[2.4,.5],[3.9,.3],[5.4,.16]].forEach(([m,g]) => {
       const o = AC.createOscillator(), ga = AC.createGain();
       o.frequency.value = base * m; o.type = 'sine';
       ga.gain.setValueAtTime(vol * g, t);
-      ga.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
-      o.connect(ga).connect(AC.destination); o.start(t); o.stop(t + 1.7);
+      ga.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
+      o.connect(ga); ga.connect(send); o.start(t); o.stop(t + 2.2);
     });
   }
+
+  /* soft ambient drone: warm pad + slow tanpura-style plucks (sa–pa–sa'–pa) */
+  function startDrone() {
+    const dg = AC.createGain(); dg.gain.value = 0; dg.connect(master);
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 720;
+    lp.connect(dg);
+    [[110,.5],[110.6,.5],[165,.28]].forEach(([f,g]) => {
+      const o = AC.createOscillator(), ga = AC.createGain();
+      o.type = 'triangle'; o.frequency.value = f; ga.gain.value = g;
+      o.connect(ga); ga.connect(lp); o.start(); });
+    dg.gain.linearRampToValueAtTime(0.028, AC.currentTime + 4);
+    const notes = [220, 330, 440, 330]; let i = 0;
+    droneTimer = setInterval(() => {
+      if (muted || AC.state !== 'running') return;
+      const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sine'; o.frequency.value = notes[i++ % 4];
+      g.gain.setValueAtTime(0.045, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+      o.connect(g); g.connect(master); g.connect(echoIn);
+      o.start(t); o.stop(t + 2.7);
+    }, 2600);
+  }
+
+  /* mute toggle */
+  const soundBtn = document.getElementById('soundBtn');
+  if (soundBtn) soundBtn.addEventListener('pointerdown', e => {
+    e.stopPropagation(); armAudio();
+    muted = !muted;
+    master.gain.linearRampToValueAtTime(muted ? 0 : 1, AC.currentTime + 0.25);
+    soundBtn.textContent = muted ? '🔇' : '🔔';
+    soundBtn.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
+  });
 
   /* cursor / finger wind */
   let px = null, vx = 0;
@@ -591,7 +657,7 @@ if (RM && riverPath) riverPath.style.strokeDashoffset = 0;
   strings.forEach((s, i) => s.el.querySelector('.bell').addEventListener('pointerdown', e => {
     e.stopPropagation(); armAudio();
     s.vel += (Math.random() > .5 ? 1 : -1) * 0.09;
-    setTimeout(() => ring(0.22, 560 + i*55), 30); }));
+    setTimeout(() => ring(0.2, 920 + i*70), 30); }));
 
   if (RM) return;                       // static strings under reduced motion
   let running = false, t = 0;
@@ -611,7 +677,7 @@ if (RM && riverPath) riverPath.style.strokeDashoffset = 0;
       /* chime softly at swing peaks */
       const now = performance.now();
       if (s.prevVel * s.vel < 0 && Math.abs(s.ang) > 0.1 && now - s.lastRing > 700) {
-        ring(Math.min(0.12, Math.abs(s.ang) * 0.5), 560 + i*55); s.lastRing = now; }
+        ring(Math.min(0.1, Math.abs(s.ang) * 0.45), 920 + i*70); s.lastRing = now; }
       s.prevVel = s.vel;
     });
     vx *= 0.82;
