@@ -1,4 +1,4 @@
-F<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@ F<!DOCTYPE html>
 <title>Anoop weds Sanghmitra · 24–27 Nov 2026</title>
 <!-- After deploy: set og:image to your hosted assets/hero-kashi.webp URL for rich WhatsApp previews -->
 <meta property="og:title" content="Anoop weds Sanghmitra">
-<meta property="og:description" content="From Kashi to Prayag · 24–27 November 2026. Join us on the journey.">
+<meta property="og:description" content="From Kashi to Prayagraj · 24–27 November 2026. Join us on the journey.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +31,24 @@ section{padding:88px 0}
 .rv{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
 .rv.in{opacity:1;transform:none}
 
+/* ---------- temple gate (opens on load, we dive into Kashi) ---------- */
+.gate{position:fixed;inset:0;z-index:50;display:flex;pointer-events:none}
+.gate-half{flex:1;background:linear-gradient(180deg,#0B1026,var(--night) 55%,var(--night-2));
+  animation:gate-open 1.7s cubic-bezier(.76,0,.19,1) 1.15s forwards;will-change:transform}
+.gate-half.right{animation-name:gate-open-r}
+.gate-half.left::after,.gate-half.right::before{content:"";position:absolute;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent 4%,var(--brass) 30%,#E8C476 50%,var(--brass) 70%,transparent 96%)}
+.gate-half.left{position:relative}.gate-half.right{position:relative}
+.gate-half.left::after{right:0}.gate-half.right::before{left:0}
+.gate-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:2.2rem;
+  text-shadow:0 0 26px rgba(227,139,41,.85),0 0 60px rgba(227,139,41,.5);
+  opacity:0;animation:gate-mark 1.5s ease forwards}
+@keyframes gate-open{to{transform:translateX(-101%)}}
+@keyframes gate-open-r{to{transform:translateX(101%)}}
+@keyframes gate-mark{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}}
+
 /* ---------- invocation + hero (Kashi, night) ---------- */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;
   background:#0E1430;color:var(--ivory);text-align:center;overflow:hidden;padding:0}
@@ -41,8 +59,9 @@ section{padding:88px 0}
 @keyframes kb{from{transform:scale(1)}to{transform:scale(1.07)}}
 .invocation{position:relative;z-index:3}
 .hero-inner>*{opacity:0;animation:rise 1.1s cubic-bezier(.2,.7,.3,1) forwards}
-.hero-inner>.eyebrow{animation-delay:.25s}.hero-inner>h1{animation-delay:.5s}
-.hero-inner>.bless{animation-delay:.95s}.hero-inner>.meta{animation-delay:1.25s}
+.hero-inner>.eyebrow{animation-delay:1.7s}.hero-inner>h1{animation-delay:2s}
+.hero-inner>.bless{animation-delay:2.55s}.hero-inner>.meta{animation-delay:2.9s}
+.hero h1 .weds{opacity:0;animation:rise 1s cubic-bezier(.2,.7,.3,1) 2.45s forwards}
 @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 .petal{position:absolute;top:-30px;z-index:2;border-radius:60% 40% 55% 45%;
   background:radial-gradient(circle at 35% 35%,#F6B75B,var(--marigold) 70%);
@@ -53,7 +72,8 @@ section{padding:88px 0}
   50%{transform:translate(-14px,52vh) rotate(230deg)}
   75%{transform:translate(22px,78vh) rotate(330deg)}
   100%{transform:translate(-8px,108vh) rotate(430deg)}}
-.invocation{padding:26px 16px 0;font-family:var(--dev);font-size:1.05rem;color:var(--brass);opacity:.95}
+.invocation{padding:26px 16px 0;font-family:var(--dev);font-size:1.05rem;color:var(--brass);
+  opacity:0;animation:rise 1s ease 1.45s forwards}
 .hero-inner{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px 22px 200px}
 .hero-inner::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);
   width:min(120vw,760px);height:78%;z-index:-1;pointer-events:none;
@@ -76,6 +96,17 @@ section{padding:88px 0}
   box-shadow:0 0 14px 5px rgba(227,139,41,.45);animation:drift 12s linear infinite;z-index:2}
 @keyframes drift{0%{transform:translateX(0) translateY(0);opacity:0}8%{opacity:1}
   92%{opacity:1}100%{transform:translateX(46vw) translateY(-7px);opacity:0}}
+.chime{position:absolute;top:0;z-index:2;transform-origin:top center;will-change:transform;pointer-events:none}
+.chime .rope{width:1.5px;margin:0 auto;background:linear-gradient(180deg,rgba(196,154,75,.15),rgba(196,154,75,.85))}
+.chime .bead{width:9px;height:9px;border-radius:50%;margin:7px auto 0;
+  background:radial-gradient(circle at 35% 30%,#F6C878,var(--marigold) 60%,#B96F1E)}
+.chime .bell{width:20px;height:17px;margin:6px auto 0;position:relative;cursor:pointer;pointer-events:auto;
+  background:linear-gradient(180deg,#E8C476,var(--brass) 55%,#8F6A2B);
+  border-radius:50% 50% 14% 14% / 78% 78% 22% 22%;
+  box-shadow:inset 0 -2px 3px rgba(0,0,0,.28),0 2px 8px rgba(0,0,0,.35)}
+.chime .bell::after{content:"";position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);
+  width:5px;height:5px;border-radius:50%;background:#8F6A2B}
+@media(max-width:760px){.chime.inner{display:none}}
 .scroll-cue{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:4;
   color:var(--brass);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;animation:bob 2.6s ease-in-out infinite}
 @keyframes bob{50%{transform:translate(-50%,-7px)}}
@@ -95,7 +126,7 @@ section{padding:88px 0}
 .tl-head h2{font-size:clamp(2rem,5vw,3rem)}
 .river{position:absolute;left:50%;top:170px;bottom:60px;width:64px;transform:translateX(-50%);opacity:.75}
 .river svg{width:100%;height:100%;overflow:visible}
-.river .flow{animation:river-flow 2.6s linear infinite}
+.river .flow{animation:river-flow 7s linear infinite}
 @keyframes river-flow{to{stroke-dashoffset:-56}}
 .event{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin:0 0 74px;position:relative}
 .event::before{content:"";position:absolute;left:50%;top:50%;width:15px;height:15px;border-radius:50%;
@@ -210,6 +241,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
   animation:ink-pan 8s ease-in-out infinite}
 @keyframes ink-pan{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
 .sass{font-family:var(--serif);font-style:italic;color:var(--sindoor);margin:-22px 0 34px;font-size:1.02rem}
+.ev-sass{font-family:var(--serif);font-style:italic;color:var(--sindoor);font-size:.98rem;margin-top:12px}
 .ticker{background:var(--sindoor);color:var(--ivory);overflow:hidden;padding:13px 0;
   font-weight:700;letter-spacing:.24em;text-transform:uppercase;font-size:.7rem}
 .ticker div{display:flex;white-space:nowrap;width:max-content;animation:tick 30s linear infinite}
@@ -222,7 +254,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 .event.in .ev-card,.event.in .ev-art{transition:transform .25s ease}
 
 /* ---------- marigold divider ---------- */
-.garland{animation:garland-flow 16s linear infinite;height:26px;background-image:radial-gradient(circle at 7px 13px,var(--marigold) 5px,var(--sindoor) 5.5px 7px,transparent 7.5px);
+.garland{animation:garland-flow 38s linear infinite;height:26px;background-image:radial-gradient(circle at 7px 13px,var(--marigold) 5px,var(--sindoor) 5.5px 7px,transparent 7.5px);
   background-size:22px 26px;background-repeat:repeat-x;opacity:.85}
 
 /* ---------- responsive ---------- */
@@ -247,7 +279,8 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
   .rv,.event.rv .ev-card,.event.rv .ev-art,.event.rv .art-img{opacity:1;transform:none;transition:none}
   .diya,.scroll-cue,.hero::before,.petal,.garland,.cd div::after,.event::before,.river .flow{animation:none}
   .ticker div,.tl-head h2,.count h2,.venue h2,.rsvp h2,.event.in .art-img,.event.in .chip{animation:none}
-  .hero-inner>*{animation:none;opacity:1}
+  .hero-inner>*,.invocation,.hero h1 .weds{animation:none;opacity:1}
+  .gate{display:none}
   .polaroid{transition:opacity .3s}
 }
 @media(max-width:760px){
@@ -258,6 +291,13 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 </style>
 </head>
 <body>
+<!-- ============ TEMPLE GATE (opening reveal) ============ -->
+<div class="gate" id="gate" aria-hidden="true">
+  <div class="gate-half left"></div>
+  <div class="gate-half right"></div>
+  <div class="gate-mark">🪔</div>
+</div>
+
 <!-- ============ HERO · KASHI, NIGHT ============ -->
 <header class="hero">
   <p class="invocation">॥ श्री गणेशाय नमः ॥</p>
@@ -279,9 +319,9 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 <section class="journey">
   <div class="wrap rv">
     <p class="eyebrow">The narrative</p>
-    <h2>From Kashi to Prayag</h2>
+    <h2>From Kashi to Prayagraj</h2>
     <p>Our celebrations begin in two cities at once — his in Kashi, hers in
-    Prayag. Two rivers running their own course through mehendi and haldi,
+    Prayagraj. Two rivers running their own course through mehendi and haldi,
     flowing toward each other, until they meet at the Sangam on the 26th —
     where two streams become one. Walk the four days with us.</p>
     <img class="story-img rv" src="assets/couple-story.webp" alt="The couple on the ghat steps, watching diyas drift" loading="lazy">
@@ -308,6 +348,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
           <div><b>Sanghmitra&rsquo;s side</b>Her residence, Prayagraj</div>
         </div>
         <span class="chip green">Dress code · Green</span>
+        <p class="ev-sass">The darker the mehendi, the deeper the love. No pressure, artists.</p>
       </div>
       <div class="ev-art"><img class="art-img" src="assets/art-mehendi.webp" alt="Mehendi night on a ghat terrace — paper-cut illustration" loading="lazy"></div>
     </div>
@@ -322,6 +363,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
           <div><b>Sanghmitra&rsquo;s side</b>Her residence, Prayagraj</div>
         </div>
         <span class="chip yellow">Dress code · Yellow</span>
+        <p class="ev-sass">Wear yellow you&rsquo;re willing to sacrifice. The haldi always wins.</p>
       </div>
       <div class="ev-art"><img class="art-img" src="assets/art-haldi.webp" alt="Haldi ceremony in a sunlit courtyard — paper-cut illustration" loading="lazy"></div>
     </div>
@@ -332,6 +374,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
         <h3>Shaadi</h3>
         <p class="ev-when">Thu, 26 Nov 2026 · 8:00 PM onwards — pheras late into the night</p>
         <p class="ev-note">Willow Woods, Prayagraj, Uttar Pradesh</p>
+        <p class="ev-sass">Nap in the afternoon. Sleep is for the 28th.</p>
         <a class="btn-mini" href="https://www.google.com/maps/search/Willow+Woods+Prayagraj" target="_blank" rel="noopener">Open in Maps</a>
       </div>
       <div class="ev-art"><img class="art-img" src="assets/art-shaadi.webp" alt="Night wedding mandap with sacred fire — paper-cut illustration" loading="lazy"></div>
@@ -343,6 +386,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
         <h3>Vidai</h3>
         <p class="ev-when">Fri, 27 Nov 2026 · 6:00 AM</p>
         <p class="ev-note">A first-light farewell from Willow Woods itself.</p>
+        <p class="ev-sass">Yes, 6 AM. Tears optional, chai provided.</p>
       </div>
       <div class="ev-art"><img class="art-img" src="assets/art-vidai.webp" alt="Dawn vidai, petals over a garlanded car — paper-cut illustration" loading="lazy"></div>
     </div>
@@ -373,7 +417,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
         <a class="btn-mini" href="https://www.google.com/maps/search/Willow+Woods+Prayagraj" target="_blank" rel="noopener">Open in Maps</a>
       </div>
     </div>
-    <p class="travel-note rv">Like the Ganga, we move from Kashi to Prayag — come along for the whole flow.</p>
+    <p class="travel-note rv">The Ganga flows from Prayagraj down to Kashi — we&rsquo;re travelling upstream, to where the rivers meet. Come along.</p>
   </div>
 </section>
 
@@ -392,8 +436,8 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
   </div>
 </section>
 <div class="ticker" aria-hidden="true"><div>
-<span>Gifts ✦</span><span>Dancing ✦</span><span>Full vibe ✦</span><span>RSVP by 30 Aug ✦</span><span>Green for Mehendi ✦</span><span>Yellow for Haldi ✦</span><span>Kashi → Prayag ✦</span>
-<span>Gifts ✦</span><span>Dancing ✦</span><span>Full vibe ✦</span><span>RSVP by 30 Aug ✦</span><span>Green for Mehendi ✦</span><span>Yellow for Haldi ✦</span><span>Kashi → Prayag ✦</span>
+<span>Gifts ✦</span><span>Dancing ✦</span><span>Full vibe ✦</span><span>RSVP by 30 Aug ✦</span><span>Green for Mehendi ✦</span><span>Yellow for Haldi ✦</span><span>Kashi → Prayagraj ✦</span>
+<span>Gifts ✦</span><span>Dancing ✦</span><span>Full vibe ✦</span><span>RSVP by 30 Aug ✦</span><span>Green for Mehendi ✦</span><span>Yellow for Haldi ✦</span><span>Kashi → Prayagraj ✦</span>
 </div></div>
 
 <!-- ============ RSVP ============ -->
@@ -431,7 +475,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
   <p class="fam">With love,</p>
   <p class="fam">the families of Anoop &amp; Sanghmitra</p><!-- TODO parents' names -->
   <p class="dev-line">॥ शुभ विवाह ॥</p>
-  <small>Kashi → Prayag · November 2026<br>made with love, code &amp; marigolds</small>
+  <small>Kashi → Prayagraj · November 2026<br>made with love, code &amp; marigolds</small>
 </footer>
 
 <script>
@@ -443,6 +487,10 @@ const PHOTO_DIR = 'assets/photos/', PHOTO_EXTS = ['webp','jpg','jpeg','png'];
 
 /* ---- motion (skipped entirely under reduced-motion) ---- */
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* temple gate: remove overlay once the doors have fully opened */
+const gate = document.getElementById('gate');
+if (gate) { if (RM) gate.remove(); else setTimeout(() => gate.remove(), 3100); }
 
 /* petals in the hero */
 if (!RM) { const hero = document.querySelector('.hero');
@@ -494,6 +542,86 @@ if (!RM) addEventListener('scroll', () => {
   if (!ticking) { requestAnimationFrame(motion); ticking = true; }
 }, { passive: true });
 if (RM && riverPath) riverPath.style.strokeDashoffset = 0;
+
+/* ---- temple bell chimes: physics + synth ---- */
+(() => {
+  const hero = document.querySelector('.hero');
+  const defs = [ {x:'4.5%', len:168, beads:5, cls:''},
+                 {x:'8%',   len:214, beads:7, cls:''},
+                 {x:'13.5%',len:132, beads:4, cls:'inner'},
+                 {x:'19%',  len:96,  beads:3, cls:'inner'},
+                 {x:'80.5%',len:104, beads:3, cls:'inner'},
+                 {x:'86%',  len:150, beads:5, cls:'inner'},
+                 {x:'90.5%',len:224, beads:7, cls:''},
+                 {x:'93%',  len:178, beads:5, cls:''} ];
+  const strings = defs.map(d => {
+    const el = document.createElement('div');
+    el.className = 'chime ' + d.cls; el.style.left = d.x;
+    el.innerHTML = `<div class="rope" style="height:${d.len}px"></div>` +
+      Array(d.beads).fill('<div class="bead"></div>').join('') + '<div class="bell"></div>';
+    hero.appendChild(el);
+    return { el, ang:0, vel:0, phase:Math.random()*6.28,
+             lastRing:0, prevVel:0 };
+  });
+
+  /* synth temple bell — no audio files */
+  let AC = null;
+  const armAudio = () => { if (!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); };
+  addEventListener('pointerdown', armAudio, { once:true });
+  function ring(vol, base) {
+    if (!AC || AC.state === 'suspended') return;
+    const t = AC.currentTime;
+    [[1,1],[2.4,.35],[3.6,.15]].forEach(([m,g]) => {
+      const o = AC.createOscillator(), ga = AC.createGain();
+      o.frequency.value = base * m; o.type = 'sine';
+      ga.gain.setValueAtTime(vol * g, t);
+      ga.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      o.connect(ga).connect(AC.destination); o.start(t); o.stop(t + 1.7);
+    });
+  }
+
+  /* cursor / finger wind */
+  let px = null, vx = 0;
+  const wind = e => { const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    if (px !== null) vx = cx - px; px = cx; };
+  hero.addEventListener('mousemove', wind, { passive:true });
+  hero.addEventListener('touchmove', wind, { passive:true });
+
+  /* bell tap = definite chime + kick */
+  strings.forEach((s, i) => s.el.querySelector('.bell').addEventListener('pointerdown', e => {
+    e.stopPropagation(); armAudio();
+    s.vel += (Math.random() > .5 ? 1 : -1) * 0.09;
+    setTimeout(() => ring(0.22, 560 + i*55), 30); }));
+
+  if (RM) return;                       // static strings under reduced motion
+  let running = false, t = 0;
+  function step(){
+    if (!running) return;
+    t += 0.016;
+    const rect = hero.getBoundingClientRect();
+    strings.forEach((s, i) => {
+      const sx = rect.left + rect.width * parseFloat(defs[i].x) / 100;
+      const dx = px === null ? 1e5 : px - sx;
+      const force = vx * 0.00009 * Math.exp(-(dx*dx) / 36000)   // cursor gust
+                  + 0.00022 * Math.sin(t * 0.8 + s.phase);       // idle breeze
+      s.vel += -0.004 * s.ang - 0.022 * s.vel + force;
+      s.vel = Math.max(-0.05, Math.min(0.05, s.vel));
+      s.ang = Math.max(-0.3, Math.min(0.3, s.ang + s.vel));
+      s.el.style.transform = `rotate(${s.ang * 57.3}deg)`;
+      /* chime softly at swing peaks */
+      const now = performance.now();
+      if (s.prevVel * s.vel < 0 && Math.abs(s.ang) > 0.1 && now - s.lastRing > 700) {
+        ring(Math.min(0.12, Math.abs(s.ang) * 0.5), 560 + i*55); s.lastRing = now; }
+      s.prevVel = s.vel;
+    });
+    vx *= 0.82;
+    requestAnimationFrame(step);
+  }
+  new IntersectionObserver(es => { const vis = es[0].isIntersecting;
+    if (vis && !running) { running = true; requestAnimationFrame(step); }
+    if (!vis) running = false;
+  }).observe(hero);
+})();
 
 /* desktop 3D tilt on cards */
 if (!RM && matchMedia('(pointer:fine)').matches) {
