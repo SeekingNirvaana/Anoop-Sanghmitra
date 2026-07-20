@@ -32,7 +32,7 @@ section{padding:88px 0}
 .rv.in{opacity:1;transform:none}
 
 /* ---------- temple gate (opens on load, we dive into Kashi) ---------- */
-.gate{position:fixed;inset:0;z-index:50;display:flex;pointer-events:none}
+.gate{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:50;display:flex;pointer-events:none}
 .gate-half{flex:1;background:linear-gradient(180deg,#0B1026,var(--night) 55%,var(--night-2));
   animation:gate-open 1.7s cubic-bezier(.76,0,.19,1) 1.15s forwards;will-change:transform}
 .gate-half.right{animation-name:gate-open-r}
@@ -50,9 +50,9 @@ section{padding:88px 0}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}}
 
 /* ---------- invocation + hero (Kashi, night) ---------- */
-.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
   background:#0E1430;color:var(--ivory);text-align:center;overflow:hidden;padding:0}
-.hero::before{content:"";position:absolute;inset:-4%;z-index:0;
+.hero::before{content:"";position:absolute;top:-4%;right:-4%;bottom:-4%;left:-4%;inset:-4%;z-index:0;
   background:linear-gradient(180deg,rgba(11,16,38,.78) 0%,rgba(11,16,38,.45) 40%,rgba(11,16,38,.1) 62%,rgba(11,16,38,0) 74%),
     url('assets/hero-kashi.webp') center bottom/cover no-repeat;
   animation:kb 38s ease-in-out infinite alternate;will-change:transform}
@@ -185,9 +185,9 @@ section{padding:88px 0}
 .count{background:linear-gradient(180deg,var(--ivory-2),var(--ivory));text-align:center}
 .count h2{font-size:clamp(1.8rem,4.6vw,2.6rem);margin-bottom:36px}
 .cd{display:flex;justify-content:center;gap:clamp(10px,3vw,26px);flex-wrap:wrap}
-.cd div{width:clamp(72px,18vw,104px);aspect-ratio:1;border-radius:50%;border:2px solid var(--brass);position:relative;
+.cd div{width:clamp(72px,18vw,104px);height:clamp(72px,18vw,104px);aspect-ratio:1;border-radius:50%;border:2px solid var(--brass);position:relative;
   display:flex;flex-direction:column;justify-content:center;background:#FFFDF6;box-shadow:0 6px 20px rgba(43,34,24,.08)}
-.cd div::after{content:"";position:absolute;inset:-8px;border:1px dashed rgba(196,154,75,.6);border-radius:50%;
+.cd div::after{content:"";position:absolute;top:-8px;right:-8px;bottom:-8px;left:-8px;inset:-8px;border:1px dashed rgba(196,154,75,.6);border-radius:50%;
   animation:spin 36s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .cd b.pop{animation:pop .55s ease}
@@ -212,7 +212,7 @@ section{padding:88px 0}
 .diya-btn{margin-top:26px;background:none;border:2px solid var(--brass);border-radius:999px;
   padding:13px 30px;font-family:var(--body);font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   font-size:.78rem;color:var(--sindoor);cursor:pointer}
-.polaroid{position:absolute;width:clamp(120px,22vw,190px);aspect-ratio:4/5;background:#fff;padding:8px 8px 26px;
+.polaroid{position:absolute;width:clamp(120px,22vw,190px);height:clamp(150px,27.5vw,238px);aspect-ratio:4/5;background:#fff;padding:8px 8px 26px;
   box-shadow:0 12px 30px rgba(43,34,24,.22);left:50%;top:62%;opacity:0;
   transform:translate(-50%,-50%) scale(.4) rotate(0deg);transition:transform .9s cubic-bezier(.2,.9,.3,1.15),opacity .5s}
 .polaroid .ph{width:100%;height:100%;background:linear-gradient(150deg,var(--night-2),var(--marigold));
@@ -254,7 +254,7 @@ footer small{display:block;margin-top:18px;font-size:.72rem;letter-spacing:.2em;
 .event.in .ev-card,.event.in .ev-art{transition:transform .25s ease}
 
 .sound-btn{position:fixed;right:16px;bottom:16px;z-index:60;width:46px;height:46px;border-radius:50%;
-  border:1.5px solid var(--brass);background:rgba(24,33,66,.82);backdrop-filter:blur(4px);
+  border:1.5px solid var(--brass);background:rgba(24,33,66,.82);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
   color:var(--ivory);font-size:1.15rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .sound-btn.hint{animation:btn-pulse 2.4s ease-in-out infinite}
 @keyframes btn-pulse{50%{box-shadow:0 0 0 9px rgba(227,139,41,.18)}}
@@ -731,13 +731,19 @@ function probe(src){ return new Promise(res => {
 });}
 (async () => {
   const slots = document.querySelectorAll('.polaroid .ph');
+  let found = 0;
   for (let i = 0; i < slots.length; i++) {
+    let hit = null;
     for (const ext of PHOTO_EXTS) {
-      const hit = await probe(`${PHOTO_DIR}photo-${i+1}.${ext}`);
-      if (hit) { slots[i].style.background = `center/cover no-repeat url("${hit}")`;
-                 slots[i].textContent = ''; break; }
+      hit = await probe(`${PHOTO_DIR}photo-${i+1}.${ext}`);
+      if (hit) break;
     }
+    if (hit) { slots[i].style.background = `center/cover no-repeat url("${hit}")`;
+               slots[i].textContent = ''; found++; }
+    else slots[i].closest('.polaroid').style.display = 'none';
   }
+  /* no photos yet -> the whole section stays out of the UI */
+  if (!found) document.getElementById('scatter').style.display = 'none';
 })();
 el('diyaBtn').addEventListener('click', () => {
   document.getElementById('scatter').classList.toggle('scattered');
