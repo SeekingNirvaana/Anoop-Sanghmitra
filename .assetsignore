@@ -1,0 +1,9 @@
+.git
+.github
+.cloudflare
+.assetsignore
+wrangler.jsonc
+node_modules
+README.md
+assets/photos/README.txt
+.gitignore
